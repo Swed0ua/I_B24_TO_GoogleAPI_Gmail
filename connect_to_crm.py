@@ -80,6 +80,8 @@ def add_deal(
     source_id = None
     ):
     
+    print("Add deal", title, category_id, storage_id, source_id)
+
     _method = 'crm.deal.add.json'
     url = f'{webhook_url}{_method}'
     addres_company_full = f'{region_name if region_name else ""} {detail_region_name if detail_region_name else ""}'.strip()
@@ -129,6 +131,7 @@ def add_deal(
 
     response = requests.post(url, json=params)
     if response.status_code == 200:
+        print("Add deal success", title)
         return response.json()
     else:
         print(f'Error: {response.status_code}')
