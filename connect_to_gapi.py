@@ -176,7 +176,7 @@ def get_new_messages(service, query=''):
                     set_read_status(service, message)
                 except Exception as e:
                     print('Error', e)
-            elif sender.strip() == '"Тарас Вілянський" <help@smartkasa.ua>':                
+            elif sender.strip() == '"Юрій Федоран" <no-reply@smartkasa.bitrix24.eu>':                
                 try:
                     [html_body, isHtml] = get_html_body_with_mail(msg)
                     if not html_body : continue
@@ -190,7 +190,7 @@ def get_new_messages(service, query=''):
 
                 except Exception as e:
                     print('Error', e)
-            elif sender.strip() == '"Тарас Вілянський" <smart.kasa.office@smartkasa.ua>':                
+            elif sender.strip() == '"Юрій Федоран" <no-reply@smartkasa.bitrix24.eu>':                
                 try:
                     [html_body, isHtml] = get_html_body_with_mail(msg)
                     if not html_body : continue
