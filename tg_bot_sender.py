@@ -3,6 +3,7 @@ from enum import Enum
 import sys
 import traceback
 import os
+import re
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, html
 from aiogram.client.default import DefaultBotProperties
@@ -42,6 +43,17 @@ dp = Dispatcher()
 bot = Bot(token=TG_BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 bot2 = Bot(token=TG_BOT2_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
+SUPPORTED_TAGS = ("b", "strong", "i", "em", "u", "s", "code", "pre", "a")
+
+def sanitize_html_for_telegram(text: str) -> str:
+    if not text:
+        return text
+    new_text = text.replace("<br>", "\n").replace("<br/>", "\n").replace("&nbsp;", " ")
+    new_text = new_text.replace("<p>", "").replace("</p>", "\n")
+    pattern = r"</?(?!{})(\w+)(?:\s+[^>]*)?>".format("|".join(SUPPORTED_TAGS))
+    new_text = re.sub(pattern, "", new_text, flags=re.IGNORECASE)
+    return new_text.strip()
+
 async def send_message_to_group(text: str, group_id=GROUP_ID):
     """
     Асинхронна функція для відправлення повідомлення в групу.
@@ -50,7 +62,8 @@ async def send_message_to_group(text: str, group_id=GROUP_ID):
     """
     try:
         print("send_message_to_group", group_id)
-        await bot.send_message(chat_id=group_id, text=text)
+        clean = sanitize_html_for_telegram(text)
+        await bot.send_message(chat_id=group_id, text=clean)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
@@ -62,7 +75,8 @@ async def send_message_to_group_bot2(text: str, group_id=GROUP_СASH_REGISTER):
     """
     try:
         print("send_message_to_group_bot2", group_id)
-        await bot2.send_message(text=text, chat_id=group_id)
+        clean = sanitize_html_for_telegram(text)
+        await bot2.send_message(text=clean, chat_id=group_id)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
@@ -75,7 +89,8 @@ async def send_message_to_group_service_support(text: str):
     try:
         print("send_message_to_group_service_support")
         # await bot2.send_message(chat_id=GROUP2_ID, text=text, message_thread_id=GROUP2_THREAD_ID)
-        await bot2.send_message(chat_id=GROUP_THAYAVKA_ID, text=text)
+        clean = sanitize_html_for_telegram(text)
+        await bot2.send_message(chat_id=GROUP_THAYAVKA_ID, text=clean)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
@@ -92,8 +107,8 @@ async def send_message_to_group_bank_supports(text: str, bank_tp:BANK_NAMES):
             lines = text.replace("span", "b").split("\n")
             cleaned_lines = [line.strip() for line in lines if line.strip()]
             new_text = "\n".join(cleaned_lines)
-
-            await bot2.send_message(chat_id=GROUP_BANKS_ID[bank_tp], text=new_text, parse_mode=ParseMode.HTML)
+            clean = sanitize_html_for_telegram(new_text)
+            await bot2.send_message(chat_id=GROUP_BANKS_ID[bank_tp], text=clean, parse_mode=ParseMode.HTML)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
