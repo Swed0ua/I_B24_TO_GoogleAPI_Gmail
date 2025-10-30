@@ -48,10 +48,26 @@ SUPPORTED_TAGS = ("b", "strong", "i", "em", "u", "s", "code", "pre", "a")
 def sanitize_html_for_telegram(text: str) -> str:
     if not text:
         return text
-    new_text = text.replace("<br>", "\n").replace("<br/>", "\n").replace("&nbsp;", " ")
-    new_text = new_text.replace("<p>", "").replace("</p>", "\n")
+
+    # All <br>, <br/>, <br /> -> newline (case-insensitive)
+    new_text = re.sub(r"(?i)<br\s*/?>", "\n", text)
+
+    # NBSP -> space
+    new_text = new_text.replace("&nbsp;", " ")
+
+    # <p> handling: remove opening, newline for closing
+    new_text = re.sub(r"(?i)<\s*p\s*>", "", new_text)
+    new_text = re.sub(r"(?i)</\s*p\s*>", "\n", new_text)
+
+    # Remove span (not supported)
+    new_text = re.sub(r"(?i)</?\s*span\b[^>]*>", "", new_text)
+
+    # Remove all tags except supported
     pattern = r"</?(?!{})(\w+)(?:\s+[^>]*)?>".format("|".join(SUPPORTED_TAGS))
     new_text = re.sub(pattern, "", new_text, flags=re.IGNORECASE)
+
+    # Trim trailing spaces per line and overall
+    new_text = "\n".join(ln.rstrip() for ln in new_text.splitlines())
     return new_text.strip()
 
 async def send_message_to_group(text: str, group_id=GROUP_ID):
@@ -63,7 +79,7 @@ async def send_message_to_group(text: str, group_id=GROUP_ID):
     try:
         print("send_message_to_group", group_id)
         clean = sanitize_html_for_telegram(text)
-        await bot.send_message(chat_id=group_id, text=clean)
+        await bot.send_message(chat_id=group_id, text=clean, parse_mode=ParseMode.HTML)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
@@ -76,7 +92,7 @@ async def send_message_to_group_bot2(text: str, group_id=GROUP_СASH_REGISTER):
     try:
         print("send_message_to_group_bot2", group_id)
         clean = sanitize_html_for_telegram(text)
-        await bot2.send_message(text=clean, chat_id=group_id)
+        await bot2.send_message(text=clean, chat_id=group_id, parse_mode=ParseMode.HTML)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
@@ -90,7 +106,7 @@ async def send_message_to_group_service_support(text: str):
         print("send_message_to_group_service_support")
         # await bot2.send_message(chat_id=GROUP2_ID, text=text, message_thread_id=GROUP2_THREAD_ID)
         clean = sanitize_html_for_telegram(text)
-        await bot2.send_message(chat_id=GROUP_THAYAVKA_ID, text=clean)
+        await bot2.send_message(chat_id=GROUP_THAYAVKA_ID, text=clean, parse_mode=ParseMode.HTML)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
