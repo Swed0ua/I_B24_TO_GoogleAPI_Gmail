@@ -187,10 +187,25 @@ def get_new_messages(service, query=''):
                         loop.run_until_complete(send_message_to_group_bot2(new_text, group_id=GROUP_СASH_REGISTER))
                     elif "Потрібно рахунок" in subject:
                         loop.run_until_complete(send_message_to_group(html_body))
+                    else:
+                        [html_body, isHtml] = get_html_body_with_mail(msg)
+                        if not html_body : continue
+                        html_body = html_body.replace("<br>", "\n").replace("&nbsp;", " ")
+                        
+                        bankType = None
+                        
+                        bankType = get_bank_type_from_subject(subject)
+
+                        if bankType:
+                            print("bankType: ", bankType)
+                            
+                            if should_process_email(bank_type=bankType, subject=subject):
+                                loop.run_until_complete(send_message_to_group_bank_supports(html_body, bankType))
 
                 except Exception as e:
                     print('Error', e)
-            elif sender.strip() == '"Юрій Федоран" <no-reply@smartkasa.bitrix24.eu>':                
+                    
+            elif sender.strip() == '"Тарас Вілянський" <smart.kasa.office@smartkasa.ua>':              
                 try:
                     [html_body, isHtml] = get_html_body_with_mail(msg)
                     if not html_body : continue
