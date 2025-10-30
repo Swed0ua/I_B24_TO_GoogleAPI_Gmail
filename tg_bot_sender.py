@@ -49,7 +49,7 @@ async def send_message_to_group(text: str, group_id=GROUP_ID):
     :param text: Текст повідомлення
     """
     try:
-        print("send_message_to_group", text)
+        print("send_message_to_group", group_id)
         await bot.send_message(chat_id=group_id, text=text)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
@@ -61,7 +61,7 @@ async def send_message_to_group_bot2(text: str, group_id=GROUP_СASH_REGISTER):
     :param text: Текст повідомлення
     """
     try:
-        print("send_message_to_group_bot2", text)
+        print("send_message_to_group_bot2", group_id)
         await bot2.send_message(text=text, chat_id=group_id)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
@@ -73,7 +73,7 @@ async def send_message_to_group_service_support(text: str):
     :param text: Текст повідомлення
     """
     try:
-        print("send_message_to_group_service_support", text)
+        print("send_message_to_group_service_support")
         # await bot2.send_message(chat_id=GROUP2_ID, text=text, message_thread_id=GROUP2_THREAD_ID)
         await bot2.send_message(chat_id=GROUP_THAYAVKA_ID, text=text)
     except Exception as e:
@@ -87,7 +87,7 @@ async def send_message_to_group_bank_supports(text: str, bank_tp:BANK_NAMES):
     :param text: Bank type for send in thier group
     """
     try:
-        print("send_message_to_group_bank_supports", text, bank_tp)
+        print("send_message_to_group_bank_supports", bank_tp)
         if bank_tp in GROUP_BANKS_ID:
             lines = text.replace("span", "b").split("\n")
             cleaned_lines = [line.strip() for line in lines if line.strip()]
