@@ -132,6 +132,7 @@ def get_new_messages(service, query=''):
             if "АІ Асистент Callsapp" in subject.strip() and "analytics@jotlink.net" in sender.strip(): 
                 try:
                     print("read [AI Асистент Callsapp]")
+                    print("message-",message)
                     [html_body, isHtml] = get_html_body_with_mail(msg)
                     print("html_body-",html_body)
 
@@ -140,6 +141,8 @@ def get_new_messages(service, query=''):
                     loop.run_until_complete(send_message_to_group_ai_telephonia(html_body))
                 except Exception as e:
                     print('read [AI Асистент Callsapp] Error', e)
+                finally:
+                    set_read_status(service, message)
 
             if "Заявка з бота  AI- менеджер підтримки" in subject:
                 try:
