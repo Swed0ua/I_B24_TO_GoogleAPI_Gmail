@@ -41,29 +41,75 @@ def get_service():
     return service
 
 def get_html_body_with_mail(msg):
+    """
+    Витягує HTML або текстовий контент з листа Gmail.
+    Обробляє вкладені частини (multipart/alternative, multipart/mixed).
+    """
     html_body = None
     isHtml = None
+    plain_text = None
 
     def procPartIter(part):
+        """Витягує дані з частини листа"""
+        if 'body' not in part:
+            return None
+        if 'data' not in part['body']:
+            return None
         body_data = part['body']['data']
-        body_bytes = base64.urlsafe_b64decode(body_data.encode('UTF-8'))
-        return body_bytes.decode('UTF-8')
+        if not body_data:
+            return None
+        try:
+            body_bytes = base64.urlsafe_b64decode(body_data.encode('UTF-8'))
+            return body_bytes.decode('UTF-8')
+        except Exception as e:
+            print(f'Error decoding body: {e}')
+            return None
 
-
-    if 'parts' in msg['payload']:
-        isHtml = True
-        for part in msg['payload']['parts']:
-            if part['mimeType'] == 'text/html':
-                # body_data = part['body']['data']
-                # body_bytes = base64.urlsafe_b64decode(body_data.encode('UTF-8'))
-                # html_body = body_bytes.decode('UTF-8')
-
-                html_body = procPartIter(part)
-                break
-    else :
-        part = msg['payload']
+    def extract_from_parts(parts):
+        """Рекурсивно витягує HTML або текст з частин листа"""
+        nonlocal html_body, plain_text, isHtml
+        
+        for part in parts:
+            mime_type = part.get('mimeType', '')
             
-        html_body = procPartIter(part)
+            # Якщо це HTML частина
+            if mime_type == 'text/html':
+                result = procPartIter(part)
+                if result:
+                    html_body = result
+                    isHtml = True
+                    return  # HTML має пріоритет
+            
+            # Якщо це текстова частина (зберігаємо як fallback)
+            elif mime_type == 'text/plain':
+                result = procPartIter(part)
+                if result and not plain_text:  # Зберігаємо тільки першу текстову частину
+                    plain_text = result
+            
+            # Якщо це multipart, рекурсивно обробляємо вкладені частини
+            elif mime_type.startswith('multipart/') and 'parts' in part:
+                extract_from_parts(part['parts'])
+
+    payload = msg.get('payload', {})
+    
+    # Якщо є частини
+    if 'parts' in payload:
+        extract_from_parts(payload['parts'])
+    else:
+        # Простий лист без частин
+        mime_type = payload.get('mimeType', '')
+        if mime_type == 'text/html':
+            html_body = procPartIter(payload)
+            isHtml = True
+        elif mime_type == 'text/plain':
+            html_body = procPartIter(payload)
+            isHtml = False
+    
+    # Якщо HTML не знайдено, використовуємо текстовий варіант
+    if not html_body and plain_text:
+        html_body = plain_text
+        isHtml = False
+    
     return [html_body, isHtml]
 
 def set_read_status(service, message):
@@ -132,15 +178,29 @@ def get_new_messages(service, query=''):
             if "АІ Асистент Callsapp" in subject.strip() and "analytics@jotlink.net" in sender.strip(): 
                 try:
                     print("read [AI Асистент Callsapp]")
-                    print("message-",message)
                     [html_body, isHtml] = get_html_body_with_mail(msg)
-                    print("html_body-",html_body)
-
-                    if not html_body : continue
+                    
+                    if not html_body:
+                        # Діагностика структури листа якщо html_body порожній
+                        payload = msg.get('payload', {})
+                        print(f"  [DEBUG] payload mimeType: {payload.get('mimeType')}")
+                        print(f"  [DEBUG] payload has parts: {'parts' in payload}")
+                        if 'parts' in payload:
+                            print(f"  [DEBUG] parts count: {len(payload['parts'])}")
+                            for i, part in enumerate(payload['parts']):
+                                print(f"  [DEBUG] part {i} mimeType: {part.get('mimeType')}")
+                                if 'parts' in part:
+                                    print(f"  [DEBUG]   part {i} has nested parts: {len(part['parts'])}")
+                                    for j, subpart in enumerate(part['parts']):
+                                        print(f"  [DEBUG]     subpart {j} mimeType: {subpart.get('mimeType')}")
+                        continue
+                    
                     html_body = html_body.replace("<br>", "\n").replace("&nbsp;", " ")
                     loop.run_until_complete(send_message_to_group_ai_telephonia(html_body))
                 except Exception as e:
-                    print('read [AI Асистент Callsapp] Error', e)
+                    print(f'read [AI Асистент Callsapp] Error: {e}')
+                    import traceback
+                    traceback.print_exc()
                 finally:
                     set_read_status(service, message)
 
@@ -151,9 +211,10 @@ def get_new_messages(service, query=''):
                     html_body = html_body.replace("<br>", "\n").replace("&nbsp;", " ")
 
                     loop.run_until_complete(send_message_to_group_service_support(html_body))
-                
+                    set_read_status(service, message)
                 except Exception as e:
                     print('Error', e)
+                    set_read_status(service, message)
 
             if sender.strip()=='"Ощадбанк Контакт-центр" <contact-centre@oschadbank.ua>':
                 html_body = get_html_body_with_mail(msg)
