@@ -133,10 +133,11 @@ def get_new_messages(service, query=''):
                 try:
                     print("read [AI Асистент Callsapp]")
                     [html_body, isHtml] = get_html_body_with_mail(msg)
+                    print("html_body-",html_body)
+
                     if not html_body : continue
                     html_body = html_body.replace("<br>", "\n").replace("&nbsp;", " ")
                     loop.run_until_complete(send_message_to_group_ai_telephonia(html_body))
-                    set_read_status(service, message)
                 except Exception as e:
                     print('read [AI Асистент Callsapp] Error', e)
 
