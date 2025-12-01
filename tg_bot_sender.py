@@ -25,6 +25,7 @@ GROUP2_THREAD_ID = int(os.getenv("GROUP2_THREAD_ID"))
 GROUP_СASH_REGISTER = int(os.getenv("GROUP_CASH_REGISTER_ID"))
 
 GROUP_THAYAVKA_ID = int(os.getenv("GROUP_THAYAVKA_ID"))
+GROUP_AI_TELEPHONIA_ID = int(os.getenv("GROUP_AI_TELEPHONIA_ID"))
 
 
 GROUP_BANKS_ID = {
@@ -107,6 +108,19 @@ async def send_message_to_group_service_support(text: str):
         # await bot2.send_message(chat_id=GROUP2_ID, text=text, message_thread_id=GROUP2_THREAD_ID)
         clean = sanitize_html_for_telegram(text)
         await bot2.send_message(chat_id=GROUP_THAYAVKA_ID, text=clean, parse_mode=ParseMode.HTML)
+    except Exception as e:
+        print(f"Помилка при відправленні повідомлення: {e}")
+
+async def send_message_to_group_ai_telephonia(text: str):
+    """
+    Асинхронна функція для відправлення повідомлення в групу.
+
+    :param text: Текст повідомлення
+    """
+    try:
+        print("send_message_to_group_ai_telephonia")
+        clean = sanitize_html_for_telegram(text)
+        await bot2.send_message(chat_id=GROUP_AI_TELEPHONIA_ID, text=clean, parse_mode=ParseMode.HTML)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
