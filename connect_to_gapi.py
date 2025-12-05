@@ -175,24 +175,12 @@ def get_new_messages(service, query=''):
             print("sender-",sender.strip())
             print("subject-",subject.strip())
 
-            if "АІ Асистент Callsapp" in subject.strip() and "analytics@jotlink.net" in sender.strip(): 
+            if "analytics@jotlink.net" in sender.strip(): 
                 try:
                     print("read [AI Асистент Callsapp]")
                     [html_body, isHtml] = get_html_body_with_mail(msg)
                     
                     if not html_body:
-                        # Діагностика структури листа якщо html_body порожній
-                        payload = msg.get('payload', {})
-                        print(f"  [DEBUG] payload mimeType: {payload.get('mimeType')}")
-                        print(f"  [DEBUG] payload has parts: {'parts' in payload}")
-                        if 'parts' in payload:
-                            print(f"  [DEBUG] parts count: {len(payload['parts'])}")
-                            for i, part in enumerate(payload['parts']):
-                                print(f"  [DEBUG] part {i} mimeType: {part.get('mimeType')}")
-                                if 'parts' in part:
-                                    print(f"  [DEBUG]   part {i} has nested parts: {len(part['parts'])}")
-                                    for j, subpart in enumerate(part['parts']):
-                                        print(f"  [DEBUG]     subpart {j} mimeType: {subpart.get('mimeType')}")
                         continue
                     
                     html_body = html_body.replace("<br>", "\n").replace("&nbsp;", " ")
