@@ -129,6 +129,7 @@ def get_bank_type_from_subject(text:str):
         "РАЙФАЙЗЕНК БАНК АВАЛЬ": BANK_NAMES.RAIFF,
         "А БАНК": BANK_NAMES.ABANK,
         "БАНК ВОСТОК": BANK_NAMES.VOSTOK,
+        "VST Bank": BANK_NAMES.VOSTOK,
     }
 
     for bank_name, bank_type in bank_names.items():
