@@ -121,7 +121,7 @@ async def send_message_to_group_service_support(text: str):
         print("send_message_to_group_service_support")
         # await bot2.send_message(chat_id=GROUP2_ID, text=text, message_thread_id=GROUP2_THREAD_ID)
         clean = sanitize_html_for_telegram(text)
-        await bot2.send_message(chat_id=GROUP_SK_STATUS_OPENING_ECQUIRING_ID, text=clean, parse_mode=ParseMode.HTML)
+        await bot2.send_message(chat_id=GROUP_THAYAVKA_ID, text=clean, parse_mode=ParseMode.HTML)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
