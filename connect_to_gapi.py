@@ -175,7 +175,7 @@ def get_new_messages(service, query=''):
 
             print("sender-",sender.strip())
             print("subject-",subject.strip())
-
+            
             if "analytics@jotlink.net" in sender.strip(): 
                 try:
                     print("read [AI Асистент Callsapp]")
@@ -204,6 +204,18 @@ def get_new_messages(service, query=''):
                 except Exception as e:
                     print('Error', e)
                     set_read_status(service, message)
+
+            if "Смарт каса Заявка на відкриття еквайрингу" in subject.replace("  ", " "):
+                try:
+                    [html_body, isHtml] = get_html_body_with_mail(msg)
+                    if not html_body : continue
+                    html_body = html_body.replace("<br>", "\n").replace("<p>", "").replace("</p>", "").replace("&nbsp;", " ")
+
+                    loop.run_until_complete(send_message_to_group_bot2_status_opening_ecquiring(html_body))
+
+                except Exception as e:
+                    print('Error [Смарт каса Заявка на відкриття еквайрингу]: ', e)
+
 
             if sender.strip()=='"Ощадбанк Контакт-центр" <contact-centre@oschadbank.ua>':
                 html_body = get_html_body_with_mail(msg)
@@ -312,17 +324,6 @@ def get_new_messages(service, query=''):
                 except Exception as e:
                     print('Error', e)
             
-            elif "Смарт каса Заявка на відкриття еквайрингу" in subject.replace("  ", " "):
-                try:
-                    [html_body, isHtml] = get_html_body_with_mail(msg)
-                    if not html_body : continue
-                    html_body = html_body.replace("<br>", "\n").replace("<p>", "").replace("</p>", "").replace("&nbsp;", " ")
-
-                    loop.run_until_complete(send_message_to_group_bot2_status_opening_ecquiring(html_body))
-
-                except Exception as e:
-                    print('Error [Смарт каса Заявка на відкриття еквайрингу]: ', e)
-
             # TODO 
             service.users().messages().modify(userId='me', id=message['id'], body={'removeLabelIds': ['UNREAD']}).execute()
 
