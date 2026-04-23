@@ -16,7 +16,7 @@ from types_file import BANK_NAMES
 load_dotenv()
 
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
-TG_BOT2_TOKEN = os.getenv("TG_BOT2_TOKEN")
+TG_BOT2_TOKEN = os.getenv("TG_BOT2_TOKEN") #@SKManager_bot
 
 GROUP_ID = int(os.getenv("GROUP_ID"))
 GROUP2_ID = int(os.getenv("GROUP2_ID"))
@@ -26,6 +26,7 @@ GROUP_СASH_REGISTER = int(os.getenv("GROUP_CASH_REGISTER_ID"))
 
 GROUP_THAYAVKA_ID = int(os.getenv("GROUP_THAYAVKA_ID"))
 GROUP_AI_TELEPHONIA_ID = int(os.getenv("GROUP_AI_TELEPHONIA_ID"))
+GROUP_SK_STATUS_OPENING_ECQUIRING_ID = int(os.getenv("GROUP_SK_STATUS_OPENING_ECQUIRING_ID"))
 
 
 GROUP_BANKS_ID = {
@@ -97,6 +98,19 @@ async def send_message_to_group_bot2(text: str, group_id=GROUP_СASH_REGISTER):
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
+async def send_message_to_group_bot2_status_opening_ecquiring(text: str):
+    """
+    Асинхронна функція для відправлення повідомлення в групу.
+
+    :param text: Текст повідомлення
+    """
+    try:
+        print("send_message_to_group_service_support status opening ecquiring")
+        clean = sanitize_html_for_telegram(text)
+        await bot2.send_message(chat_id=GROUP_SK_STATUS_OPENING_ECQUIRING_ID, text=clean, parse_mode=ParseMode.HTML)
+    except Exception as e:
+        print(f"[send_message_to_group_bot2_status_opening_ecquiring] Помилка при відправленні повідомлення: {e}")
+
 async def send_message_to_group_service_support(text: str):
     """
     Асинхронна функція для відправлення повідомлення в групу.
@@ -107,7 +121,7 @@ async def send_message_to_group_service_support(text: str):
         print("send_message_to_group_service_support")
         # await bot2.send_message(chat_id=GROUP2_ID, text=text, message_thread_id=GROUP2_THREAD_ID)
         clean = sanitize_html_for_telegram(text)
-        await bot2.send_message(chat_id=GROUP_THAYAVKA_ID, text=clean, parse_mode=ParseMode.HTML)
+        await bot2.send_message(chat_id=GROUP_SK_STATUS_OPENING_ECQUIRING_ID, text=clean, parse_mode=ParseMode.HTML)
     except Exception as e:
         print(f"Помилка при відправленні повідомлення: {e}")
 
