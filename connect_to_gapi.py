@@ -225,7 +225,7 @@ def get_new_messages(service, query=''):
                     html_body = extract_text_between_markers(
                         text=html_body,
                         start_marker="Клієнт придбав смарт касу цікавлять умови еквайрингу",
-                        end_marker="Рахунок банку - Рахунок в Банку Еквайрингу",
+                        end_marker="Рахунок банку - ",
                     )
 
                     loop.run_until_complete(send_message_to_group_bot2_status_opening_ecquiring(html_body))
