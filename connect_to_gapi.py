@@ -120,16 +120,26 @@ def separate_html_to_text(html:str):
     text = soup.get_text(separator="")
     return text.strip()
 
-def extract_text_between_markers(text: str, start_marker: str, end_marker: str):
+def extract_text_between_markers(text: str, start_marker: str, end_markers):
     start_index = text.find(start_marker)
     if start_index == -1:
         return text
 
-    end_index = text.find(end_marker, start_index)
-    if end_index == -1:
+    if isinstance(end_markers, str):
+        end_markers = [end_markers]
+
+    end_positions = []
+    for marker in end_markers:
+        marker_index = text.find(marker, start_index)
+        if marker_index != -1:
+            end_positions.append((marker_index, marker))
+
+    if not end_positions:
         return text[start_index:].strip()
 
-    end_index += len(end_marker)
+    end_index, found_marker = min(end_positions, key=lambda item: item[0])
+    end_index += len(found_marker)
+
     return text[start_index:end_index].strip()
 
 def get_bank_type_from_subject(text:str):
@@ -225,7 +235,10 @@ def get_new_messages(service, query=''):
                     html_body = extract_text_between_markers(
                         text=html_body,
                         start_marker="Клієнт придбав смарт касу цікавлять умови еквайрингу",
-                        end_marker="Рахунок банку - ",
+                        end_markers=[
+                            "Рахунок банку - Рахунок в Банку Еквайрингу",
+                            "Рахунок банку - Рахунок іншого банк",
+                        ],
                     )
 
                     loop.run_until_complete(send_message_to_group_bot2_status_opening_ecquiring(html_body))
