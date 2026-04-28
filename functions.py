@@ -101,9 +101,15 @@ def parce_oshad_mail(txt:str):
 def parce_abank_mail(txt:str, isHtml=True):
     if isHtml:
         parsed_html_body = BeautifulSoup(txt.replace('&nbsp;', ' ').strip(), 'html.parser')
-        parsed_html_body_elements = parsed_html_body.find('p', class_='MsoNormal').find('span')
+        parsed_html_body_elements = parsed_html_body.find('p', class_='MsoNormal')
 
-        text_content = ' '.join(parsed_html_body_elements.stripped_strings)
+        if parsed_html_body_elements:
+            span_element = parsed_html_body_elements.find('span')
+            target_element = span_element if span_element else parsed_html_body_elements
+            text_content = ' '.join(target_element.stripped_strings)
+        else:
+            
+            text_content = ' '.join(parsed_html_body.stripped_strings)
     else:
         text_content = txt
 
