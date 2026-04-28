@@ -227,7 +227,7 @@ def get_new_messages(service, query=''):
                     print('Error', e)
                     set_read_status(service, message)
 
-            if "Смарт каса Заявка на відкриття еквайрингу" in subject.replace("  ", " "):
+            if "Смарт каса Заявка на відкриття еквайрингу" in subject.replace("  ", " ") and "smart.kasa.office@smartkasa.ua" in sender.strip():
                 try:
                     [html_body, isHtml] = get_html_body_with_mail(msg)
                     if not html_body : continue
