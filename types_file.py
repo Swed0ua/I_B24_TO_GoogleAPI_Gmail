@@ -7,7 +7,9 @@ class BANK_NAMES(Enum):
     OKSI=901,
     RAIFF=902,
     PIVDENNUY=903,
-    VOSTOK=904
+    VOSTOK=904,
+    MONOBANK=1348,
+    NOVAPAY=644
 
 class MAIL_NAMES(Enum):
     SMARTKASA="smartkasa"

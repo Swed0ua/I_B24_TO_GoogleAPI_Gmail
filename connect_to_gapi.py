@@ -152,6 +152,8 @@ def get_bank_type_from_subject(text:str):
         "А БАНК": BANK_NAMES.ABANK,
         "БАНК ВОСТОК": BANK_NAMES.VOSTOK,
         "VST Bank": BANK_NAMES.VOSTOK,
+        "Monobank": BANK_NAMES.MONOBANK,
+        "NovaPay": BANK_NAMES.NOVAPAY,
     }
 
     for bank_name, bank_type in bank_names.items():
@@ -171,6 +173,9 @@ def should_process_email(bank_type, subject):
 
     if bank_type == BANK_NAMES.PUMB:
         return "Смарт каса заміна серійного номеру ПУМБ Банк" in subject
+
+    if bank_type == BANK_NAMES.NOVAPAY:
+        return "Смарт каса заміна серійного номеру" in subject
 
     return "Власник бізнесу хоче відновити" in subject
 

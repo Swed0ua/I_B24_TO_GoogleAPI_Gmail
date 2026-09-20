@@ -36,7 +36,9 @@ GROUP_BANKS_ID = {
     BANK_NAMES.PIVDENNUY: int(os.getenv("GROUP_PIVDENNUY_ID")),
     BANK_NAMES.OSCHAD: int(os.getenv("GROUP_OSCHAD_ID")),
     BANK_NAMES.ABANK: int(os.getenv("GROUP_ABANK_ID")),
-    BANK_NAMES.VOSTOK: int(os.getenv("GROUP_VOSTOK_ID"))
+    BANK_NAMES.VOSTOK: int(os.getenv("GROUP_VOSTOK_ID")),
+    BANK_NAMES.MONOBANK: int(os.getenv("GROUP_MONOBANK_ID", "-5326916503")),
+    BANK_NAMES.NOVAPAY: int(os.getenv("GROUP_NOVAPAY_ID", "-4751908254")),
 }
 
 # Ініціалізація бота та диспетчера
