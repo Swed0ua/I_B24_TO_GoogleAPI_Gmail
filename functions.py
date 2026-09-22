@@ -43,9 +43,9 @@ key_val_abanl = {
     "merchant_name" : "company_name",
     "trade_point_name" : "place_name",
     "trade_point_address" : "detail_region_name",
-    "retail_id" : "mss",
+    "mcc" : "mss",                 # → UF_CRM_1682949214
+    "retail_id" : "merchant_id",   # → UF_CRM_1682949301
     "terminal_id" : "terminal_id",
-    "merchant_id" : "merchant_id",
     "merchant_fio" : "owner_name",
     "merchant_phone" : "owner_tel"
 }
