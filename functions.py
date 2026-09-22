@@ -32,7 +32,6 @@ key_val = {
     "Юридична адреса Вулиця":"legal_address_street",
     "Коментар":"comments",
     "Серійний номер Смарт каси":"serial_number",
-    "E-mail автора заявки":"author_email",
     "contact_id":"contact_id"
     # "source_id":"source_id"
 }
@@ -62,37 +61,32 @@ def create_default_data(iter=key_val):
 
 def parce_oshad_mail(txt:str):
     res = create_default_data()
+    author_email = None
 
     parsed_html_body = BeautifulSoup(txt.replace('&nbsp;', ' ').strip(), 'html.parser')
     parsed_html_body_elements = parsed_html_body.findAll('div')
     for element in parsed_html_body_elements:
-        # print(element.text)
         try:
-            # element_obj = element.text.strip().split(':')
-            # element_key = element_obj[0].strip()
-            # element_val = element_obj[-1]
-            # element_key = element_key
-            # if element_key in key_val:
-            #     res[key_val[element_key]] = element_val.strip()
-
             element_obj = element.text.replace("  ", " ").strip().split(':')
             element_key = element_obj[0].strip()
             element_val = element_obj[-1].strip()
 
+            if "E-mail автора заявки" in element_key:
+                author_email = element_val
+                continue
+
             for key in key_val:
                 if key in element_key:
                     res[key_val[key]] = element_val
-                    break 
+                    break
                 
         except:
             exec
-    # time.sleep(1000)
 
     if res["tel_cashier"] is None:
         res["tel_cashier"] = res['tel_cashier_add']
     del res["tel_cashier_add"]
 
-    author_email = res.pop("author_email", None)
     id = get_contact_id(first_name=res["owner_name"], phone=res["tel_cashier"], email=author_email)
     res['contact_id'] = id
 
