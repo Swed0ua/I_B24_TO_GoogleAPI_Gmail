@@ -173,7 +173,8 @@ def create_contact(first_name=None, last_name=None, phone=None, email=None):
     return result['result']
 
 
-def add_contact_email(contact_id, email):
+def set_contact_email(contact_id, email):
+    """Замінює всі EMAIL контакту на один адресу з листа."""
     if not contact_id or not email:
         return
 
@@ -181,13 +182,10 @@ def add_contact_email(contact_id, email):
     contact = requests.post(get_url, json={'id': contact_id}).json().get('result') or {}
     emails = contact.get('EMAIL') or []
 
-    if any((item.get('VALUE') or '').lower() == email.lower() for item in emails):
-        return
-
     payload_emails = [
-        {'ID': item['ID'], 'VALUE': item['VALUE'], 'VALUE_TYPE': item.get('VALUE_TYPE', 'WORK')}
+        {'ID': item['ID'], 'DELETE': 'Y'}
         for item in emails
-        if item.get('ID') and item.get('VALUE')
+        if item.get('ID')
     ]
     payload_emails.append({'VALUE': email, 'VALUE_TYPE': 'WORK'})
 
@@ -201,7 +199,7 @@ def get_contact_id(first_name=None, last_name=None, phone=None, email=None):
         is_ids = create_contact(first_name, last_name, phone, email)
     else:
         is_ids = is_ids[0]['ID']
-        add_contact_email(is_ids, email)
+        set_contact_email(is_ids, email)
     print("is_ids", is_ids)
     return is_ids
 
