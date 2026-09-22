@@ -32,6 +32,7 @@ key_val = {
     "Юридична адреса Вулиця":"legal_address_street",
     "Коментар":"comments",
     "Серійний номер Смарт каси":"serial_number",
+    "E-mail автора заявки":"author_email",
     "contact_id":"contact_id"
     # "source_id":"source_id"
 }
@@ -91,7 +92,8 @@ def parce_oshad_mail(txt:str):
         res["tel_cashier"] = res['tel_cashier_add']
     del res["tel_cashier_add"]
 
-    id = get_contact_id(first_name=res["owner_name"], phone=res["tel_cashier"], email=None)
+    author_email = res.pop("author_email", None)
+    id = get_contact_id(first_name=res["owner_name"], phone=res["tel_cashier"], email=author_email)
     res['contact_id'] = id
 
     return res
@@ -162,29 +164,51 @@ def create_contact(first_name=None, last_name=None, phone=None, email=None):
     _method = 'crm.contact.add.json'
     url = f'{webhook_url}{_method}'
 
-    data = {
-        'fields': {
-            'NAME': first_name,
-            'LAST_NAME': last_name,
-            'OPENED': 'Y',  # Відкритий для всіх
-            'TYPE_ID': 'CLIENT',  # Тип контакту
-            'PHONE': [{'VALUE': phone, 'VALUE_TYPE': 'WORK'}],  
-            'EMAIL': [{'VALUE': email, 'VALUE_TYPE': 'WORK'}],  
-        }    
+    fields = {
+        'NAME': first_name,
+        'LAST_NAME': last_name,
+        'OPENED': 'Y',
+        'TYPE_ID': 'CLIENT',
+        'PHONE': [{'VALUE': phone, 'VALUE_TYPE': 'WORK'}],
     }
+    if email:
+        fields['EMAIL'] = [{'VALUE': email, 'VALUE_TYPE': 'WORK'}]
 
-    response = requests.post(url, json=data)
+    response = requests.post(url, json={'fields': fields})
     result = response.json()
     return result['result']
 
 
+def add_contact_email(contact_id, email):
+    if not contact_id or not email:
+        return
+
+    get_url = f'{webhook_url}crm.contact.get.json'
+    contact = requests.post(get_url, json={'id': contact_id}).json().get('result') or {}
+    emails = contact.get('EMAIL') or []
+
+    if any((item.get('VALUE') or '').lower() == email.lower() for item in emails):
+        return
+
+    payload_emails = [
+        {'ID': item['ID'], 'VALUE': item['VALUE'], 'VALUE_TYPE': item.get('VALUE_TYPE', 'WORK')}
+        for item in emails
+        if item.get('ID') and item.get('VALUE')
+    ]
+    payload_emails.append({'VALUE': email, 'VALUE_TYPE': 'WORK'})
+
+    update_url = f'{webhook_url}crm.contact.update.json'
+    requests.post(update_url, json={'id': contact_id, 'fields': {'EMAIL': payload_emails}})
+
+
 def get_contact_id(first_name=None, last_name=None, phone=None, email=None):
     is_ids = get_contact_id_by_number(phone)
-    if len(is_ids)<=0:
+    if len(is_ids) <= 0:
         is_ids = create_contact(first_name, last_name, phone, email)
     else:
         is_ids = is_ids[0]['ID']
-    print("is_ids",is_ids)
+        add_contact_email(is_ids, email)
+    print("is_ids", is_ids)
     return is_ids
 
 
