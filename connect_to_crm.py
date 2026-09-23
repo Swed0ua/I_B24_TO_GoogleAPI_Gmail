@@ -77,7 +77,8 @@ def add_deal(
     trading_name=None,
 
     serial_number = None,
-    source_id = None
+    source_id = None,
+    region_oblast_id = None,  # UF_CRM_1688969951
     ):
     
     print("Add deal", title, category_id, storage_id, source_id)
@@ -109,6 +110,7 @@ def add_deal(
             'UF_CRM_1682949301':merchant_id,
             'UF_CRM_1682949378':terminal_id,
             'UF_CRM_1682949121':regional_admin,
+            'UF_CRM_1688969951':region_oblast_id,
 
             'UF_CRM_1682949511':bank_initials,
             'UF_CRM_1682949965':bank_manager,

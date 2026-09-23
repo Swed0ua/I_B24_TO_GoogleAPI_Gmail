@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import requests
 
+from region_utils import resolve_ukraine_oblast
+
 load_dotenv()
 
 key_val = {
@@ -86,6 +88,9 @@ def parce_oshad_mail(txt:str):
     if res["tel_cashier"] is None:
         res["tel_cashier"] = res['tel_cashier_add']
     del res["tel_cashier_add"]
+
+    _, region_oblast_id = resolve_ukraine_oblast(res.get("regional_admin") or "")
+    res["region_oblast_id"] = region_oblast_id
 
     id = get_contact_id(first_name=res["owner_name"], phone=res["tel_cashier"], email=author_email)
     res['contact_id'] = id
