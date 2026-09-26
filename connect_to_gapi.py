@@ -355,6 +355,11 @@ def get_new_messages(service, query=''):
 
                     if "Потрібно рахунок" in subject:
                         loop.run_until_complete(send_message_to_group(html_body))
+                    else:
+                        bankType = get_bank_type_from_subject(subject)
+                        if bankType and should_process_email(bank_type=bankType, subject=subject):
+                            print("bankType: ", bankType)
+                            loop.run_until_complete(send_message_to_group_bank_supports(html_body, bankType))
 
                 except Exception as e:
                     print('Error', e)
