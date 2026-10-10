@@ -5,6 +5,8 @@ client_secret.json
 client_secret_old.json
 cred.json
 .env
+mail_watcher/secrets/*
+!mail_watcher/secrets/.gitkeep
 env_template.txt
 venv/
 .idea/
