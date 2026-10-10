@@ -1,4 +1,4 @@
-config.py
+/config.py
 token.pickle
 token_old.pickle
 client_secret.json
