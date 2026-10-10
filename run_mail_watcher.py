@@ -1,12 +1,9 @@
 """
-Окремий сервіс: unread Gmail inbox → Telegram.
-Не чіпає main.py / connect_to_gapi.py.
+Окремий процес: unread Gmail inbox → Telegram.
+Стартує з main через spawn_mail_watcher_process() або вручну:
 
-Запуск:
   python run_mail_watcher.py
-
-Один раз отримати token.pickle:
-  python -m mail_watcher.inbox
+  python -m mail_watcher.inbox   # один раз → token.pickle
 """
 from dotenv import load_dotenv
 

@@ -2,6 +2,7 @@ import time
 import traceback
 from connect_to_crm import add_deal
 from connect_to_gapi import get_new_messages, get_service
+from mail_watcher.process import spawn_mail_watcher_process
 from types_file import BANK_NAMES, MAIL_NAMES
 
 # TODO: Temporary stoped
@@ -41,6 +42,8 @@ def program():
             # add_deal(**parce_body, title="TEST | розробка | Не видаляти", category_id=16, storage_id="C16:NEW", source_id="EMAIL")
 
 if __name__ == '__main__':
+    spawn_mail_watcher_process()
+
     while True:
 
         try:
