@@ -11,7 +11,7 @@ import googleapiclient.discovery
 
 # from connect_to_crm import add_deal
 from functions import parce_NRP_smartkasa_ua_mail, parce_abank_mail, parce_oshad_mail
-from tg_bot_sender import send_message_to_group, send_message_to_group_ai_telephonia, send_message_to_group_bank_supports, send_message_to_group_bot2, send_message_to_group_bot2_status_opening_ecquiring, send_message_to_group_service_support, GROUP_СASH_REGISTER
+from tg_bot_sender import send_message_to_group, send_message_to_group_ai_telephonia, send_message_to_group_bank_supports, send_message_to_group_bot2, send_message_to_group_bot2_status_opening_ecquiring, send_message_to_group_service_support, GROUP_СASH_REGISTER, GROUP_BONUS_ZP_ID
 from types_file import BANK_NAMES, MAIL_NAMES
 
 # Області доступу
@@ -230,6 +230,18 @@ def get_new_messages(service, query=''):
                     set_read_status(service, message)
                 except Exception as e:
                     print('Error', e)
+                    set_read_status(service, message)
+
+            if "Бонус до ЗП" in subject:
+                try:
+                    [html_body, isHtml] = get_html_body_with_mail(msg)
+                    if not html_body:
+                        continue
+                    html_body = html_body.replace("<br>", "\n").replace("&nbsp;", " ")
+                    loop.run_until_complete(send_message_to_group_bot2(html_body, group_id=GROUP_BONUS_ZP_ID))
+                    set_read_status(service, message)
+                except Exception as e:
+                    print('Error [Бонус до ЗП]:', e)
                     set_read_status(service, message)
 
             if "Смарт каса Заявка на відкриття еквайрингу" in subject.replace("  ", " ") and "smart.kasa.office@smartkasa.ua" in sender.strip():

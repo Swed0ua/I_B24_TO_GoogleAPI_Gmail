@@ -42,7 +42,8 @@ def program():
             # add_deal(**parce_body, title="TEST | розробка | Не видаляти", category_id=16, storage_id="C16:NEW", source_id="EMAIL")
 
 if __name__ == '__main__':
-    spawn_mail_watcher_process()
+    # TODO: Temporary stoped
+    # spawn_mail_watcher_process()
 
     while True:
 
