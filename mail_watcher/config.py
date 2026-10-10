@@ -1,4 +1,3 @@
-"""Налаштування mail_watcher з env (окрема скринька від default pipeline)."""
 from __future__ import annotations
 
 import os
