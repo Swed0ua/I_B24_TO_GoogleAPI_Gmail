@@ -47,7 +47,7 @@ def load_settings() -> MailWatcherSettings:
         poll_interval_sec=max(1, int(os.getenv('MAIL_POLL_INTERVAL_SEC', '60'))),
         skip_domains=_csv(os.getenv('MAIL_SKIP_DOMAINS', 'google.com,googlemail.com')),
         telegram_bot_token=(
-            os.getenv('TG_BOT_TOKEN') or os.getenv('TELEGRAM_BOT_TOKEN') or ''
+            os.getenv('TG_BOT2_TOKEN') or os.getenv('TELEGRAM_BOT_TOKEN') or ''
         ).strip(),
         telegram_chat_ids=_csv(os.getenv('TELEGRAM_CHAT_IDS')),
         secrets_dir=secrets_dir,
