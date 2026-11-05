@@ -1,15 +1,5 @@
-import re
-
 from mail_watcher.config import MailWatcherSettings
 from mail_watcher.models import IncomingMail
-
-_REPLY_SUBJECT = re.compile(r'^(re|fw|fwd|відп)\s*(\[\d+\])?\s*:', re.IGNORECASE)
-
-
-def is_reply(mail: IncomingMail) -> bool:
-    if mail.in_reply_to or mail.references:
-        return True
-    return bool(_REPLY_SUBJECT.match(mail.subject.strip()))
 
 
 def sender_domain(addr: str) -> str:
