@@ -4,6 +4,8 @@ import requests
 
 from mail_watcher.config import MailWatcherSettings
 from mail_watcher.models import IncomingMail
+from mail_watcher.policy import latest_body
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +41,7 @@ class TelegramNotifier:
 
     @staticmethod
     def _format(mail: IncomingMail) -> str:
-        body = mail.body.strip() or '(empty body)'
+        body = latest_body(mail.body) or '(empty body)'
         if len(body) > _BODY_LIMIT:
             body = body[:_BODY_LIMIT] + '\n…'
         lines = [
