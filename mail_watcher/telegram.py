@@ -44,13 +44,7 @@ class TelegramNotifier:
         body = latest_body(mail.body) or '(empty body)'
         if len(body) > _BODY_LIMIT:
             body = body[:_BODY_LIMIT] + '\n…'
-        lines = [
-            'New mail',
-            f'From: {mail.from_name} <{mail.from_addr}>'.strip(),
-            f'Subject: {mail.subject or "(no subject)"}',
-            f'Date: {mail.date or "-"}',
-        ]
-        if mail.attachments:
-            lines.append('Files: ' + ', '.join(mail.attachments))
-        lines.extend(['', body])
-        return '\n'.join(lines)
+        subject = (mail.subject or '').strip() or '(no subject)'
+        from_line = f'{mail.from_name} <{mail.from_addr}>'.strip()
+        return f'{subject}\n\nFrom: {from_line}\n\n{body}'
+
